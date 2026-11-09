@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fahrradverleih</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#dashboard"><span class="logo" aria-hidden="true">🚲</span> <span data-cfg="appName">Fahrradverleih</span></a>
+    <button class="menu-toggle" aria-label="Menü" onclick="document.body.classList.toggle('nav-open')">☰</button>
+    <nav class="nav">
+      <a href="#dashboard">Dashboard</a>
+      <a href="#items" data-cfg="itemsNav">Fahrrad-Verwaltung</a>
+      <a href="#persons">Personen</a>
+      <a href="#rentals">Ausleihen</a>
+      <a href="#prices">Preise</a>
+      <button class="btn btn-green btn-sm" onclick="openRentalDialog()">+ Neue Ausleihe</button>
+    </nav>
+  </header>
+
+  <main id="app" class="container"></main>
+
+  <!-- Dialog: Gegenstand -->
+  <dialog id="itemDialog">
+    <form method="dialog" id="itemForm" class="form">
+      <h2 id="itemDialogTitle">Fahrrad</h2>
+      <div class="grid2">
+        <label>Marke* <input name="brand" required></label>
+        <label>Modell* <input name="model" required></label>
+        <label>Typ* <select name="type" required></select></label>
+        <label id="sizeLabel">Größe* <span id="sizeInput"></span></label>
+        <label>Zustand* <select name="condition" required></select></label>
+      </div>
+      <p class="form-error" hidden></p>
+      <div class="actions">
+        <button type="button" class="btn btn-ghost" onclick="closeDialog(this)">Abbrechen</button>
+        <button class="btn btn-blue" value="save">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Dialog: Person -->
+  <dialog id="personDialog">
+    <form method="dialog" id="personForm" class="form">
+      <h2 id="personDialogTitle">Person</h2>
+      <div class="grid2">
+        <label>Vorname* <input name="firstName" required autocomplete="off"></label>
+        <label>Nachname* <input name="lastName" required autocomplete="off"></label>
+        <label>E-Mail <input name="email" type="email" autocomplete="off"></label>
+        <label>Telefon <input name="phone" type="tel" autocomplete="off"></label>
+      </div>
+      <fieldset>
+        <legend>Ausweis</legend>
+        <div class="grid2">
+          <label>Ausweistyp* <select name="docType" required></select></label>
+          <label>Ausweisnummer* <input name="docNumber" required minlength="4" autocomplete="off" style="text-transform:uppercase"></label>
+        </div>
+        <label class="dropzone" id="dropzone">
+          <input type="file" name="file" accept="image/jpeg,image/png,application/pdf" hidden>
+          <span class="dz-icon" aria-hidden="true">🪪</span>
+          <span class="dz-text">Ausweis-Scan hierher ziehen oder <u>auswählen</u><br><small>JPG, PNG oder PDF · max. 5 MB</small></span>
+          <img class="dz-preview" alt="" hidden>
+        </label>
+        <p class="hint" id="currentFile"></p>
+      </fieldset>
+      <p class="form-error" hidden></p>
+      <div class="actions">
+        <button type="button" class="btn btn-ghost" onclick="closeDialog(this)">Abbrechen</button>
+        <button class="btn btn-blue" value="save">Speichern</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Dialog: Neue Ausleihe -->
+  <dialog id="rentalDialog" class="wide">
+    <form method="dialog" id="rentalForm" class="form">
+      <h2>Neue Ausleihe</h2>
+
+      <div class="step"><span class="step-nr">1</span> Person</div>
+      <div class="row">
+        <input id="personSearch" list="personList" placeholder="Name oder Ausweisnummer suchen …" autocomplete="off" class="grow">
+        <datalist id="personList"></datalist>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="openPersonDialog(null, true)">+ Neue Person</button>
+      </div>
+      <p class="hint" id="personPicked"></p>
+
+      <div class="step"><span class="step-nr">2</span> Verleihbeginn &amp; Dauer</div>
+      <div class="grid2">
+        <label>Verleihbeginn* <input type="datetime-local" name="start" required></label>
+        <label>Dauer (Stunden)* <input type="number" name="hours" min="1" max="336" value="4" required></label>
+      </div>
+      <div class="chips" id="durationChips"></div>
+      <p class="hint" id="endInfo"></p>
+
+      <div class="step"><span class="step-nr">3</span> <span data-cfg="items">Fahrräder</span> auswählen</div>
+      <div class="row">
+        <input id="itemFilter" placeholder="Filtern …" class="grow" autocomplete="off">
+        <select id="itemTypeFilter"><option value="">Alle Typen</option></select>
+      </div>
+      <div class="pick-list" id="pickList"></div>
+
+      <div class="summary">
+        <div><span id="pickCount">0</span> ausgewählt</div>
+        <div class="price">Preis: <strong id="quote">–</strong></div>
+      </div>
+      <p class="form-error" hidden></p>
+      <div class="actions">
+        <button type="button" class="btn btn-ghost" onclick="closeDialog(this)">Abbrechen</button>
+        <button class="btn btn-green" value="save">Ausleihe buchen</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toasts" aria-live="polite"></div>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
